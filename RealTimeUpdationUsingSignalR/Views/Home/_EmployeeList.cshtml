@@ -1,0 +1,27 @@
+﻿
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>EmployeeID</th>
+            <th>EmployeeName</th>
+            <th>Email ID</th>
+            <th>PhoneNumber</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+
+                <tr>
+                    <td>@item.EmployeeID</td>
+                    <td>@item.EmployeeName</td>
+                    <td>@item.EmailAdress</td>
+                    <td>@item.MobileNumber</td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>

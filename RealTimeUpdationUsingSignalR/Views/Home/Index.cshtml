@@ -1,0 +1,148 @@
+﻿@model IList<RealTimeUpdationUsingSignalR.Models.Employee>
+@{
+    ViewBag.Title = "Index";
+}
+<link href="~/Content/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+<div>
+    <h1 style="color: green">CRUD using SignalR,MVC and Entity Framework</h1>
+    <table border="1">
+        <tr>
+            <td>
+                <h1 style="color:blueviolet">Add/Update/Delete Employee</h1>
+                <table border="1">
+                    <tr>
+                        <td>Employee Id</td>
+                        <td><input id="txtEmployeeId" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td>Employee Name</td>
+                        <td><input id="txtEmployeeName" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td>Email Address</td>
+                        <td><input id="txtEmail" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td>Mobile Number</td>
+                        <td><input id="txtMobile" type="text" /></td>
+                    </tr>
+                </table>
+                <table border="1">
+                    <tr>
+                        <td><button id="btnPostEmployee" onclick="InsertEmployee()">Add New Employee</button></td>
+                        <td>
+                            <button id="btnPutEmployee" onclick="UpdateEmployee()">Update Employee</button>
+                            <button id="btnDeleteEmployee" onclick="DeleteEmployee();return false;">Delete Employee</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <br /><br />
+    <div id="dataTable"></div>
+</div>
+
+@section JavaScript{
+<script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script type="text/javascript">
+        $(function () {
+            // Create a proxy to signalr hub on web server. It reference the hub.
+            var notificationFromHub = $.connection.employeeHub;
+
+            // Connect to signalr hub
+            $.connection.hub.start().done(function () {
+                FetchEmployees();
+            });
+
+            // Notify to client with the recent updates
+            notificationFromHub.client.updatedClients = function () {
+                FetchEmployees();
+            };
+        });
+
+        function FetchEmployees() {
+            var model = $('#dataTable');
+            $.ajax({
+                url: '/home/GetAllEmployeeRecords',
+                contentType: 'application/html ; charset:utf-8',
+                type: 'GET',
+                dataType: 'html'
+            })
+                .success(function (result) { model.empty().append(result); })
+        }
+
+        // Insert Employee Record
+        function InsertEmployee()
+        {
+
+                    var employee = {
+                        EmployeeID: $('#txtEmployeeId').val(),
+                        EmployeeName: $('#txtEmployeeName').val(),
+                        EmailAdress: $('#txtEmail').val(),
+                        MobileNumber: $('#txtMobile').val()
+                    };
+
+
+                    $.ajax({
+                    url: '/Home/Insert',
+                    type: 'POST',
+                    data: JSON.stringify(employee),
+                    contentType: "application/json;charset=utf-8",
+                    success: function (data) {
+                        alert('Employee added Successfully');
+                    },
+                    error: function () {
+                        alert('Employee not Added');
+                    }
+                });
+        }
+
+        // Update Employee Record
+        function UpdateEmployee() {
+
+            var employee = {
+                EmployeeID: $('#txtEmployeeId').val(),
+                EmployeeName: $('#txtEmployeeName').val(),
+                EmailAdress: $('#txtEmail').val(),
+                MobileNumber: $('#txtMobile').val()
+            };
+
+            $.ajax({
+                url: '/home/Update',
+                type: 'POST',
+                data: JSON.stringify(employee),
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    alert('Employee updated Successfully');
+                },
+                error: function (e) {
+                    alert('Employee could not be updated');
+                }
+            });
+        }
+
+        // Delete Employee Record
+        function DeleteEmployee() {
+
+            var employee = {
+                EmployeeID: $('#txtEmployeeId').val()
+            };
+
+            $.ajax({
+                url: '/home/Delete',
+                type: 'POST',
+                data: JSON.stringify(employee),
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    alert('Employee deleted Successfully');
+                },
+                error: function (x, y, z) {
+                    alert(x + '\n' + y + '\n' + z);
+                }
+            });
+        }
+    </script>
+}
