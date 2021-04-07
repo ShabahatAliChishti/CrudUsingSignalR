@@ -35,6 +35,7 @@ namespace RealTimeUpdationUsingSignalR.Controllers
         {
             return View();
         }
+        //ok
         [HttpPost]
         public ActionResult Insert(Employee employee)
         {
